@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-export default function Navbar() {
+export default function Navbar({ onOpenAuth }) {
   const [scrolled, setScrolled] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -23,11 +25,11 @@ export default function Navbar() {
       {/* Center – Nav Links */}
       <ul className="navbar-links">
         {[
-          { label: 'Home', to: '/' },
-          { label: 'About', to: '/about' },
-          { label: 'Services', to: '/services' },
-          { label: 'Blog', to: '/blog' },
-          { label: 'Contact', to: '/contact' },
+          { label: 'Home',     to: '/'        },
+          { label: 'About',    to: '/about'   },
+          { label: 'Services', to: '/services'},
+          { label: 'Blog',     to: '/blog'    },
+          { label: 'Contact',  to: '/contact' },
         ].map(({ label, to }) => (
           <li key={label}>
             <NavLink
@@ -40,16 +42,36 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* Right – Profile */}
+      {/* Right – Auth / Profile */}
       <div className="navbar-profile">
-        <button className="profile-btn" id="profile-btn">
-          <div className="profile-avatar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-            </svg>
-          </div>
-          Profile
-        </button>
+        {user ? (
+          /* Logged-in: show avatar + go to dashboard */
+          <Link to="/dashboard" className="profile-btn" id="go-to-dashboard-btn">
+            <div className="profile-avatar" style={{
+              background: 'rgba(255,255,255,0.3)',
+              fontSize: '13px',
+              fontWeight: 800,
+              color: 'white',
+            }}>
+              {user.avatar || user.name?.[0] || 'U'}
+            </div>
+            {user.name?.split(' ')[0]}
+          </Link>
+        ) : (
+          /* Not logged in: Sign In button */
+          <button
+            className="profile-btn"
+            onClick={() => onOpenAuth?.('login')}
+            id="profile-btn"
+          >
+            <div className="profile-avatar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+              </svg>
+            </div>
+            Sign In
+          </button>
+        )}
       </div>
     </nav>
   );
