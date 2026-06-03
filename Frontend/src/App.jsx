@@ -7,6 +7,7 @@ import AuthModal from './components/AuthModal';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import Services from './pages/Services';
 
 /* Inner app — needs router context for useLocation */
 function AppInner() {
@@ -36,7 +37,7 @@ function AppInner() {
       <Routes>
         <Route path="/" element={<Home onOpenAuth={openAuth} />} />
         <Route path="/about"    element={<PlaceholderPage title="About Us" />} />
-        <Route path="/services" element={<PlaceholderPage title="Our Services" />} />
+        <Route path="/services" element={<Services onOpenAuth={openAuth} />} />
         <Route path="/blog"     element={<PlaceholderPage title="Blog" />} />
         <Route path="/contact"  element={<PlaceholderPage title="Contact Us" />} />
         <Route path="/privacy"  element={<PlaceholderPage title="Privacy Policy" />} />
