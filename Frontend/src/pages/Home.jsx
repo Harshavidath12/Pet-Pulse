@@ -316,7 +316,7 @@ function StatCounter({ target, label, suffix = '+' }) {
 /* ═══════════════════════════════
    HOME PAGE
    ═══════════════════════════════ */
-export default function Home() {
+export default function Home({ onOpenAuth }) {
   const petCategories = [
     { icon: '🐕', label: 'Dogs',    count: '120+ breeds',  color: '#2d7a4f', glow: 'rgba(45,122,79,0.15)',   gradient: 'linear-gradient(135deg,rgba(45,122,79,0.07),transparent)' },
     { icon: '🐈', label: 'Cats',    count: '80+ breeds',   color: '#40916c', glow: 'rgba(64,145,108,0.15)',  gradient: 'linear-gradient(135deg,rgba(64,145,108,0.07),transparent)' },
@@ -387,10 +387,14 @@ export default function Home() {
             </p>
 
             <div className="hero-cta-group">
-              <Link to="/appointments" className="btn-primary" id="book-appointment-btn">
+              <button
+                className="btn-primary"
+                id="book-appointment-btn"
+                onClick={() => onOpenAuth?.('register')}
+              >
                 <PawPrint size={18} />
                 Book Appointment
-              </Link>
+              </button>
               <Link to="/services" className="btn-secondary" id="explore-services-btn">
                 Explore Services
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
