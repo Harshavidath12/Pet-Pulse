@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/admin');
 const appointmentRoutes = require('./routes/appointments');
 const petsRoutes = require('./routes/pets');
 const doctorsRoutes = require('./routes/doctors');
+const notificationsRoutes = require('./routes/notifications');
 const User = require('./models/User');
 const Doctor = require('./models/Doctor');
 
@@ -29,6 +30,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/pets', petsRoutes);
 app.use('/api/doctors', doctorsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
