@@ -135,6 +135,30 @@ export default function AdminAppointments() {
           </button>
         </div>
       )}
+
+      {!isPending && appt.status === 'confirmed' && (
+        <div style={{ marginTop: '8px', textAlign: 'right' }}>
+          <button 
+            onClick={() => {
+              if (window.confirm('Are you sure you want to cancel this appointment? The user will be notified.')) {
+                handleUpdateStatus(appt._id, 'declined');
+              }
+            }}
+            style={{ 
+              padding: '8px 16px', 
+              borderRadius: '6px', 
+              border: '1px solid #ef4444', 
+              background: 'transparent', 
+              color: '#ef4444', 
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '13px'
+            }}
+          >
+            Cancel Appointment
+          </button>
+        </div>
+      )}
     </div>
   );
 
