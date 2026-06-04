@@ -9,6 +9,8 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
 import ServiceDetail from './pages/ServiceDetail';
+import Contact from './pages/Contact';
+import About from './pages/About';
 // Admin views are now embedded inside Dashboard.jsx (role-based routing)
 import { useAuth } from './context/AuthContext';
 
@@ -50,11 +52,11 @@ function AppInner() {
 
       <Routes>
         <Route path="/" element={<Home onOpenAuth={openAuth} />} />
-        <Route path="/about"    element={<PlaceholderPage title="About Us" />} />
+        <Route path="/about"    element={<About />} />
         <Route path="/services" element={<Services onOpenAuth={openAuth} />} />
         <Route path="/services/:serviceId" element={<ServiceDetail onOpenAuth={openAuth} />} />
         <Route path="/blog"     element={<PlaceholderPage title="Blog" />} />
-        <Route path="/contact"  element={<PlaceholderPage title="Contact Us" />} />
+        <Route path="/contact"  element={<Contact />} />
         <Route path="/privacy"  element={<PlaceholderPage title="Privacy Policy" />} />
         <Route path="/terms"    element={<PlaceholderPage title="Terms of Service" />} />
 
