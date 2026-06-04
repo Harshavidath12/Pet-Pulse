@@ -1,21 +1,30 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+export const servicesList = [
+  { slug: 'pain-control', title: 'Comprehensive Pain Control', img: '/services/user_pain_control.jpg', delay: 100,
+    description: 'There is a difference between experiencing pain as a human versus experiencing pain as an animal: from an evolutionary standpoint, prior to the modern age of domestication, the early ancestors of our companion animals knew that showing pain would mean being killed and eaten by predators. Thus, the signs of pain in animals are very subtle, requiring trained eyes and hands to recognize and treat it.' },
+  { slug: 'anesthesia', title: 'Advanced Anesthesia', img: '/services/surgery.png', delay: 200,
+    description: 'We utilize state-of-the-art anesthetic protocols tailored to your pet’s individual needs. Our dedicated team closely monitors vitals throughout any procedure to ensure the highest safety and comfort standards.' },
+  { slug: 'surgery', title: 'Companion Animal Surgery', img: '/services/hero_dog.png', delay: 300,
+    description: 'From routine spays and neuters to complex orthopedic and soft tissue surgeries, our surgical suite is equipped with advanced technology. We prioritize pain management and a smooth recovery for every patient.' },
+  { slug: 'medical-services', title: 'Companion Animal Medical Services', img: '/services/wellness.png', delay: 400,
+    description: 'Our comprehensive medical services cover everything from internal medicine and dermatology to cardiology and endocrinology, ensuring your pet receives holistic and thorough care at every stage of life.' },
+  { slug: 'dental', title: 'Dental Services', img: '/services/user_dental.png', delay: 500,
+    description: 'Oral health is crucial to your pet’s overall well-being. We offer comprehensive dental cleanings, extractions, and oral surgery using digital dental radiography to safely diagnose and treat hidden dental diseases.' },
+  { slug: 'equine', title: 'Equine Services', img: '/services/user_equine.png', delay: 600,
+    description: 'We provide specialized ambulatory and in-clinic care for horses, encompassing routine wellness, lameness evaluations, reproductive services, and advanced diagnostics to keep your equine companions at their peak performance.' },
+  { slug: 'laboratory', title: 'Laboratory Services', img: '/services/wellness.png', delay: 700,
+    description: 'Our in-house laboratory allows us to perform a wide array of diagnostic tests rapidly, providing immediate answers during emergencies and thorough screenings for routine wellness visits.' },
+  { slug: 'emergency', title: '24 Hour Emergency Service', img: '/services/emergency.png', delay: 800,
+    description: 'Emergencies don’t wait for business hours. Our dedicated team is available 24/7 to provide critical care, intensive monitoring, and immediate life-saving interventions when your pet needs it most.' },
+];
 
 export default function Services({ onOpenAuth }) {
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const servicesList = [
-    { title: 'Comprehensive Pain Control', img: '/services/user_pain_control.jpg', delay: 100 },
-    { title: 'Advanced Anesthesia', img: '/services/surgery.png', delay: 200 },
-    { title: 'Companion Animal Surgery', img: '/services/hero_dog.png', delay: 300 },
-    { title: 'Companion Animal Medical Services', img: '/services/wellness.png', delay: 400 },
-    { title: 'Dental Services', img: '/services/user_dental.png', delay: 500 },
-    { title: 'Equine Services', img: '/services/user_equine.png', delay: 600 },
-    { title: 'Laboratory Services', img: '/services/wellness.png', delay: 700 },
-    { title: '24 Hour Emergency Service', img: '/services/emergency.png', delay: 800 },
-  ];
 
   return (
     <div className="services-page">
@@ -51,14 +60,14 @@ export default function Services({ onOpenAuth }) {
         
         <div className="services-grid">
           {servicesList.map((srv, idx) => (
-            <div key={idx} className="service-card" style={{ animationDelay: `${srv.delay}ms` }}>
+            <Link to={`/services/${srv.slug}`} key={idx} className="service-card" style={{ animationDelay: `${srv.delay}ms`, textDecoration: 'none' }}>
               <div className="service-card-img-wrapper">
                 <img src={srv.img} alt={srv.title} />
               </div>
               <div className="service-card-content">
                 <h3>{srv.title}</h3>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
