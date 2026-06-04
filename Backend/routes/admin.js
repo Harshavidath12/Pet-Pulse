@@ -105,11 +105,22 @@ router.get('/appointments', protect, admin, async (req, res) => {
 router.put('/appointments/:id/status', protect, admin, async (req, res) => {
   try {
     const { status } = req.body;
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await Appointment.findById(req.params.id).populate('pet');
 
     if (appointment) {
       appointment.status = status;
       const updatedAppointment = await appointment.save();
+
+      // If declined/cancelled, create a notification for the user
+      if (status === 'declined') {
+        const Notification = require('../models/Notification');
+        await Notification.create({
+          user: appointment.owner,
+          message: `Your appointment for ${appointment.pet?.name || 'your pet'} on ${new Date(appointment.date).toLocaleDateString()} at ${appointment.time} has been cancelled.`,
+          relatedAppointment: appointment._id
+        });
+      }
+
       res.json(updatedAppointment);
     } else {
       res.status(404).json({ message: 'Appointment not found' });
