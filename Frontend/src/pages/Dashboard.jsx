@@ -33,10 +33,7 @@ export default function Dashboard() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /* ── Notification bell ── persisted in localStorage ── */
-  const [notifCount, setNotifCount] = useState(() => readLS(LS_KEYS.notif, 3));
-  const [notifOpen,  setNotifOpen]  = useState(false);
-  const notifRef = useRef(null);
+
 
   /* ── Sidebar badges ── persisted in localStorage ── */
   const [petsBadge,  setPetsBadge]  = useState(() => readLS(LS_KEYS.pets,  2));
@@ -64,25 +61,7 @@ export default function Dashboard() {
     }
   }, [location.pathname]); // eslint-disable-line
 
-  /* Close notification dropdown on outside click */
-  useEffect(() => {
-    const handler = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setNotifOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
-  const handleNotifClick = () => {
-    const next = !notifOpen;
-    setNotifOpen(next);
-    if (next && notifCount > 0) {
-      setNotifCount(0);
-      writeLS(LS_KEYS.notif, 0); // persist — survives refresh
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -149,11 +128,7 @@ export default function Dashboard() {
           </button>
 
           <div className="topbar-right">
-            <div style={{ position: 'relative' }} ref={notifRef}>
-              <button className="topbar-icon-btn" onClick={handleNotifClick}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-              </button>
-            </div>
+
             <div className="topbar-user-chip">
               <div className="topbar-user-avatar">{user?.avatar || user?.name?.[0] || 'U'}</div>
             </div>
