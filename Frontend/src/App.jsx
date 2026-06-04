@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -8,8 +8,22 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
+import ServiceDetail from './pages/ServiceDetail';
+// Admin views are now embedded inside Dashboard.jsx (role-based routing)
+import { useAuth } from './context/AuthContext';
 
 /* Inner app — needs router context for useLocation */
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div>Loading...</div>;
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+}
+
 function AppInner() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
@@ -38,6 +52,7 @@ function AppInner() {
         <Route path="/" element={<Home onOpenAuth={openAuth} />} />
         <Route path="/about"    element={<PlaceholderPage title="About Us" />} />
         <Route path="/services" element={<Services onOpenAuth={openAuth} />} />
+        <Route path="/services/:serviceId" element={<ServiceDetail onOpenAuth={openAuth} />} />
         <Route path="/blog"     element={<PlaceholderPage title="Blog" />} />
         <Route path="/contact"  element={<PlaceholderPage title="Contact Us" />} />
         <Route path="/privacy"  element={<PlaceholderPage title="Privacy Policy" />} />
@@ -52,6 +67,8 @@ function AppInner() {
             </ProtectedRoute>
           }
         />
+
+
       </Routes>
 
       {!isDashboard && <Footer />}
