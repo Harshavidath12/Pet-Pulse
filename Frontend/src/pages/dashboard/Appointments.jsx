@@ -1,80 +1,59 @@
-import { useState } from 'react';
-
-const appointments = [
-  {
-    id: 1, date: 'Jun 15, 2026', time: '10:00 AM',
-    vet: 'Dr. Amara Perera', service: 'Annual Checkup',
-    pet: 'Max', species: '🐕', status: 'upcoming', duration: '30 min',
-    notes: 'Routine annual wellness examination including weight, dental, eyes and ears check.',
-  },
-  {
-    id: 2, date: 'Jun 22, 2026', time: '2:30 PM',
-    vet: 'Dr. Rohan Silva', service: 'Dental Cleaning',
-    pet: 'Luna', species: '🐈', status: 'upcoming', duration: '45 min',
-    notes: 'Professional dental scaling and polishing under sedation.',
-  },
-  {
-    id: 3, date: 'Jul 05, 2026', time: '11:00 AM',
-    vet: 'Dr. Amara Perera', service: 'Vaccination Booster',
-    pet: 'Max', species: '🐕', status: 'upcoming', duration: '15 min',
-    notes: 'Annual booster vaccination — DHPP and Rabies.',
-  },
-  {
-    id: 4, date: 'May 10, 2026', time: '9:00 AM',
-    vet: 'Dr. Rohan Silva', service: 'Ear Infection Treatment',
-    pet: 'Max', species: '🐕', status: 'completed', duration: '20 min',
-    notes: 'Otitis externa treatment — ear drops prescribed for 7 days.',
-  },
-  {
-    id: 5, date: 'Apr 28, 2026', time: '3:00 PM',
-    vet: 'Dr. Amara Perera', service: 'Spay Surgery Follow-up',
-    pet: 'Luna', species: '🐈', status: 'completed', duration: '20 min',
-    notes: 'Post-operative check. Wound healing well. Stitches removed.',
-  },
-];
+import { useState, useEffect } from 'react';
+import api from '../../api';
 
 const statusStyle = {
-  upcoming:  { bg: 'rgba(45,122,79,0.1)',   color: '#2d7a4f',  label: 'Upcoming'  },
-  today:     { bg: 'rgba(233,168,76,0.12)',  color: '#c17a10',  label: 'Today'     },
+  pending:   { bg: 'rgba(233,168,76,0.12)',  color: '#c17a10',  label: 'Pending Approval' },
+  confirmed: { bg: 'rgba(45,122,79,0.1)',    color: '#2d7a4f',  label: 'Confirmed' },
   completed: { bg: 'rgba(82,183,136,0.12)',  color: '#40916c',  label: 'Completed' },
-  cancelled: { bg: 'rgba(212,112,74,0.12)',  color: '#d4704a',  label: 'Cancelled' },
+  declined:  { bg: 'rgba(212,112,74,0.12)',  color: '#d4704a',  label: 'Declined' },
 };
 
+const speciesEmoji = { Dog: '🐕', Cat: '🐈', Bird: '🐦', Rabbit: '🐇', Exotic: '🦎', Other: '🐾' };
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 function AppointmentCard({ appt, onSelect, isSelected }) {
-  const st = statusStyle[appt.status] || statusStyle.upcoming;
+  const st = statusStyle[appt.status] || statusStyle.pending;
+  const d = new Date(appt.date);
+  const day   = d.getDate();
+  const month = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const petEmoji = speciesEmoji[appt.pet?.species] || '🐾';
+
   return (
     <div
       className={`appt-card ${isSelected ? 'appt-card--selected' : ''}`}
       onClick={() => onSelect(appt)}
-      id={`appt-card-${appt.id}`}
+      id={`appt-card-${appt._id}`}
     >
       <div className="appt-card-left">
         <div className="appt-card-date-box">
-          <span className="appt-card-day">{appt.date.split(' ')[1].replace(',', '')}</span>
-          <span className="appt-card-month">{appt.date.split(' ')[0]}</span>
+          <span className="appt-card-day">{day}</span>
+          <span className="appt-card-month">{month}</span>
         </div>
       </div>
 
       <div className="appt-card-body">
         <div className="appt-card-top">
-          <h3 className="appt-card-service">{appt.service}</h3>
+          <h3 className="appt-card-service">{appt.serviceType || appt.reason || 'Appointment'}</h3>
           <span className="appt-status-badge" style={{ background: st.bg, color: st.color }}>
             {st.label}
           </span>
         </div>
-        <p className="appt-card-vet">{appt.vet}</p>
+        <p className="appt-card-vet">{appt.vet?.name || 'Doctor not assigned yet'}</p>
         <div className="appt-card-meta">
           <span className="appt-card-meta-chip">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             {appt.time}
           </span>
-          <span className="appt-card-meta-chip">
-            {appt.species} {appt.pet}
-          </span>
-          <span className="appt-card-meta-chip">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            {appt.duration}
-          </span>
+          {appt.pet && (
+            <span className="appt-card-meta-chip">
+              {petEmoji} {appt.pet.name}
+            </span>
+          )}
         </div>
       </div>
 
@@ -86,11 +65,30 @@ function AppointmentCard({ appt, onSelect, isSelected }) {
 }
 
 export default function Appointments() {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
 
-  const filters = ['all', 'upcoming', 'completed'];
-  const filtered = filter === 'all' ? appointments : appointments.filter((a) => a.status === filter);
+  const fetchAppointments = async () => {
+    try {
+      const { data } = await api.get('/api/appointments/my');
+      setAppointments(data);
+    } catch (err) {
+      setError('Failed to load appointments.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchAppointments(); }, []);
+
+  const filters = ['all', 'pending', 'confirmed', 'completed', 'declined'];
+
+  const filtered = filter === 'all'
+    ? appointments
+    : appointments.filter(a => a.status === filter);
 
   return (
     <div className="dash-page" id="appointments-page">
@@ -103,6 +101,7 @@ export default function Appointments() {
           className="btn-primary"
           style={{ borderRadius: '12px', padding: '12px 24px', fontSize: '14px' }}
           id="book-appointment-dash-btn"
+          onClick={() => window.location.href = '/services'}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Book Appointment
@@ -111,7 +110,7 @@ export default function Appointments() {
 
       {/* Filters */}
       <div className="appt-filters">
-        {filters.map((f) => (
+        {filters.map(f => (
           <button
             key={f}
             className={`appt-filter-btn ${filter === f ? 'active' : ''}`}
@@ -123,89 +122,84 @@ export default function Appointments() {
         ))}
       </div>
 
-      {/* Two-column: list + detail */}
-      <div className="appt-layout">
-        {/* List */}
-        <div className="appt-list">
-          {filtered.map((a) => (
-            <AppointmentCard
-              key={a.id}
-              appt={a}
-              onSelect={setSelected}
-              isSelected={selected?.id === a.id}
-            />
-          ))}
-          {filtered.length === 0 && (
-            <div className="dash-empty-state">
-              <span style={{ fontSize: 48 }}>📭</span>
-              <p>No {filter} appointments found.</p>
-            </div>
-          )}
-        </div>
+      {loading && <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>Loading appointments…</div>}
+      {error   && <div style={{ textAlign: 'center', padding: 40, color: '#b91c1c' }}>{error}</div>}
 
-        {/* Detail panel */}
-        <div className={`appt-detail-panel ${selected ? 'appt-detail-panel--visible' : ''}`}>
-          {selected ? (
-            <>
-              <div className="appt-detail-header">
-                <h2 className="appt-detail-service">{selected.service}</h2>
-                <span
-                  className="appt-status-badge"
-                  style={{
-                    background: statusStyle[selected.status]?.bg,
-                    color: statusStyle[selected.status]?.color,
-                  }}
-                >
-                  {statusStyle[selected.status]?.label}
-                </span>
+      {!loading && !error && (
+        <div className="appt-layout">
+          {/* List */}
+          <div className="appt-list">
+            {filtered.length === 0 ? (
+              <div className="dash-empty-state">
+                <span style={{ fontSize: 48 }}>📭</span>
+                <p>No {filter === 'all' ? '' : filter} appointments yet.</p>
+                <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+                  Book one from the <a href="/services" style={{ color: 'var(--green-forest)' }}>Services</a> page.
+                </p>
               </div>
+            ) : (
+              filtered.map(a => (
+                <AppointmentCard
+                  key={a._id}
+                  appt={a}
+                  onSelect={setSelected}
+                  isSelected={selected?._id === a._id}
+                />
+              ))
+            )}
+          </div>
 
-              <div className="appt-detail-grid">
-                {[
-                  { icon: '📅', label: 'Date', value: selected.date },
-                  { icon: '🕐', label: 'Time', value: selected.time },
-                  { icon: '👩‍⚕️', label: 'Veterinarian', value: selected.vet },
-                  { icon: '⏱️', label: 'Duration', value: selected.duration },
-                  { icon: '🐾', label: 'Pet', value: `${selected.species} ${selected.pet}` },
-                ].map(({ icon, label, value }) => (
-                  <div key={label} className="appt-detail-item">
-                    <span className="appt-detail-icon">{icon}</span>
-                    <div>
-                      <div className="appt-detail-label">{label}</div>
-                      <div className="appt-detail-value">{value}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="appt-detail-notes">
-                <h4 className="appt-detail-notes-title">Notes</h4>
-                <p>{selected.notes}</p>
-              </div>
-
-              {selected.status === 'upcoming' && (
-                <div className="appt-detail-actions">
-                  <button className="btn-primary" style={{ borderRadius: '10px', padding: '10px 22px', fontSize: '14px' }}>
-                    Reschedule
-                  </button>
-                  <button style={{
-                    padding: '10px 22px', borderRadius: '10px', fontSize: '14px',
-                    background: 'rgba(212,112,74,0.1)', color: '#d4704a',
-                    border: '1px solid rgba(212,112,74,0.25)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600,
-                  }}>
-                    Cancel
-                  </button>
+          {/* Detail panel */}
+          <div className={`appt-detail-panel ${selected ? 'appt-detail-panel--visible' : ''}`}>
+            {selected ? (
+              <>
+                <div className="appt-detail-header">
+                  <h2 className="appt-detail-service">{selected.serviceType || selected.reason}</h2>
+                  <span className="appt-status-badge" style={{ background: statusStyle[selected.status]?.bg, color: statusStyle[selected.status]?.color }}>
+                    {statusStyle[selected.status]?.label}
+                  </span>
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="dash-empty-state" style={{ height: '100%' }}>
-              <span style={{ fontSize: 48 }}>📋</span>
-              <p>Select an appointment to view details</p>
-            </div>
-          )}
+
+                <div className="appt-detail-grid">
+                  {[
+                    { icon: '📅', label: 'Date',         value: formatDate(selected.date) },
+                    { icon: '🕐', label: 'Time',         value: selected.time },
+                    { icon: '👩‍⚕️', label: 'Veterinarian', value: selected.vet?.name || 'TBD' },
+                    { icon: '🐾', label: 'Pet',          value: `${speciesEmoji[selected.pet?.species] || '🐾'} ${selected.pet?.name || '—'}` },
+                    { icon: '💊', label: 'Service',      value: selected.serviceType || '—' },
+                  ].map(({ icon, label, value }) => (
+                    <div key={label} className="appt-detail-item">
+                      <span className="appt-detail-icon">{icon}</span>
+                      <div>
+                        <div className="appt-detail-label">{label}</div>
+                        <div className="appt-detail-value">{value}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {selected.notes && (
+                  <div className="appt-detail-notes">
+                    <h4 className="appt-detail-notes-title">Notes</h4>
+                    <p>{selected.notes}</p>
+                  </div>
+                )}
+
+                {selected.status === 'pending' && (
+                  <div style={{ marginTop: 16, padding: '12px 16px', background: '#fffbeb', borderRadius: 10, border: '1px solid #fcd34d', fontSize: 13, color: '#92400e' }}>
+                    ⏳ Your appointment is awaiting admin approval.
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="dash-empty-state" style={{ height: '100%' }}>
+                <span style={{ fontSize: 48 }}>📋</span>
+                <p>Select an appointment to view details</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
