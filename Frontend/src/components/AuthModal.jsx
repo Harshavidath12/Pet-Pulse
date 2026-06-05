@@ -151,7 +151,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
             </div>
 
             {/* Form */}
-            <form className="auth-form" onSubmit={handleSubmit} noValidate>
+            <form className="auth-form" onSubmit={handleSubmit} noValidate autoComplete="off">
               {/* Name field – register only */}
               {mode === 'register' && (
                 <div className="auth-field">
@@ -172,7 +172,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      autoComplete="name"
+                      autoComplete="off"
                     />
                   </div>
                 </div>
@@ -197,8 +197,8 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    autoComplete="email"
-                  />
+                    autoComplete="off"
+                    />
                 </div>
               </div>
 
@@ -220,7 +220,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
