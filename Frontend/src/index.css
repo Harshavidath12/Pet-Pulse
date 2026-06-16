@@ -1316,9 +1316,15 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font-b
   position: relative;
   max-height: 95vh;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
   box-shadow: 0 32px 80px rgba(30,86,49,0.2), 0 8px 24px rgba(0,0,0,0.08);
   animation: cardIn 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
   border: 1px solid var(--border-subtle);
+}
+
+.auth-card::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes cardIn {
