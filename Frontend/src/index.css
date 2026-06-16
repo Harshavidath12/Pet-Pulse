@@ -3124,6 +3124,12 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font-b
   padding: 32px;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-content::-webkit-scrollbar {
+  display: none;
 }
 
 .modal-close {

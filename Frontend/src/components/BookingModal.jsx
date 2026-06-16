@@ -93,7 +93,7 @@ export default function BookingModal({ isOpen, onClose, defaultServiceType }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: 520, width: '100%', padding: 0, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+      <div className="modal-content" style={{ maxWidth: 520, width: '100%', padding: 0, overflowY: 'auto', overflowX: 'hidden' }} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div style={{ background: 'linear-gradient(135deg, #1e5631, #2d7a4f)', padding: '28px 32px 22px', color: 'white' }}>
