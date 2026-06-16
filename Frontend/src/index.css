@@ -1270,10 +1270,14 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font-b
   .feature-banners { grid-template-columns: 1fr; }
   .navbar { padding: 0 20px; }
   .navbar-phone span { display: none; }
+  .navbar-phone { min-width: auto; }
+  .navbar-profile { min-width: auto; }
 }
 
 @media (max-width: 768px) {
   .navbar-links { display: none; }
+  .navbar-phone { min-width: auto; }
+  .navbar-profile { min-width: auto; }
   .pet-categories { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr; gap: 36px; }
   .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
