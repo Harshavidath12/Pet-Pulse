@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Base URL — Vite proxy will forward /api/* to http://localhost:5000
 const api = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: 'https://petpulse-backend-olqa.onrender.com',
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
     try {
       const { token } = JSON.parse(stored);
       if (token) config.headers.Authorization = `Bearer ${token}`;
-    } catch {}
+    } catch { }
   }
   return config;
 });
@@ -22,7 +22,7 @@ api.interceptors.request.use((config) => {
 // Auth endpoints
 export const authAPI = {
   register: (data) => api.post('/api/auth/register', data),
-  login:    (data) => api.post('/api/auth/login', data),
+  login: (data) => api.post('/api/auth/login', data),
 };
 
 export default api;
